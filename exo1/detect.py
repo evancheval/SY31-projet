@@ -61,8 +61,8 @@ class Detector(Node):
         img = cv2.cvtColor(img, 54)
 
         contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(img, contours, -1, (0,255,0), 3,8, hierarchy)
-        return img
+        # cv2.drawContours(img, contours, -1, (0,255,0), 3,8, hierarchy)
+        
         areamax = 0
         imax = 0
         if not(len(contours)==0):
