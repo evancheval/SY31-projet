@@ -1,0 +1,16 @@
+<launch>
+	<!-- Take the compressed robot's stream and republish it as a normal image -->
+	<!-- TODO: Put your own package name in the next line -->
+	<node pkg="exo1" exec="decompressor" name="decompressor" output="screen" />
+
+	<!-- Undistort the uncompressed image -->
+	<node pkg="image_proc" exec="image_proc" name="image_proc" output="screen">
+		<remap from="image" to="image_raw" />
+	</node>
+
+	<!-- Display -->
+	<node pkg="rqt_image_view" exec="rqt_image_view" name="rqt_image_view" output="screen" />
+
+	<!-- TODO: Add your nodes here -->
+	<node pkg="exo1" exec="detections" name="detections" output="screen" />
+</launch>
