@@ -5,6 +5,7 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 
 
 class Detector(Node):
@@ -20,6 +21,9 @@ class Detector(Node):
         #blue mask (HSV) : 205/360 hue -> 160 to 230 -> OpenCV : 80 to 115
         self.blue_min = np.array([[80, 120, 80]], dtype=np.uint8)
         self.blue_max = np.array([[115, 230, 250]], dtype=np.uint8)
+
+        self.red_min = np.array([[0, 100, 10], [140, 100, 10]], dtype=np.uint8)
+        self.red_max = np.array([[10, 230, 245], [180, 230, 245]], dtype=np.uint8)
 
         self.sub = self.create_subscription(Image, "image_rect", self.callback, 1)
 
@@ -50,27 +54,49 @@ class Detector(Node):
         #if HSV image
         img = cv2.cvtColor(img, 40)
 
-        mask = cv2.inRange(img, self.blue_min[0], self.blue_max[0])
+        
+
+        mask_blue = cv2.inRange(img, self.blue_min[0], self.blue_max[0])
+        mask_red = cv2.inRange(img, self.red_min[0], self.red_max[0])
         # Convert the image to HSV color space
-        for i in range(1,len(self.blue_min)):        
-            mask = mask + cv2.inRange(img, self.blue_min[i], self.blue_min[i])
+        for i in range(1,len(self.red_min)):        
+            mask_red = mask_red + cv2.inRange(img, self.red_min[i], self.red_max[i])
 
         
 
         #if HSV image
         img = cv2.cvtColor(img, 54)
 
-        contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours_blue, hierarchy_blue = cv2.findContours(mask_blue, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours_red, hierarchy_red = cv2.findContours(mask_red, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         # cv2.drawContours(img, contours, -1, (0,255,0), 3,8, hierarchy)
         
-        areamax = 0
-        imax = 0
-        if not(len(contours)==0):
-            for i in range(len(contours)):
-                area = cv2.contourArea(contours[i])
-                if areamax < area:
-                    areamax = area
-                    imax = i
+        areamax_red = 0
+        areamax_blue = 0
+        imax_red = 0
+        imax_blue = 0
+        if not(len(contours_blue)==0 and len(contours_red)==0):
+            for i in range(len(contours_blue)):
+                area = cv2.contourArea(contours_blue[i])
+                if areamax_blue < area:
+                    areamax_blue = area
+                    imax_blue = i
+            for i in range(len(contours_red)):
+                area = cv2.contourArea(contours_red[i])
+                if areamax_red < area:
+                    areamax_red = area
+                    imax_red = i
+            if areamax_red > areamax_blue :
+                areamax = areamax_red
+                imax = imax_red
+                contours = contours_red
+                self.pub = self.create_publisher(Image, "detections", 1)
+                print("gauche")
+            else:
+                areamax = areamax_blue
+                imax = imax_blue
+                contours = contours_blue
+                print("droite")
             cv2.drawContours(img, contours, imax, (0,255,0), 3,8)
             # centerx = np.mean(contours[imax][0])
             # centery = np.mean(contours[imax][1])
