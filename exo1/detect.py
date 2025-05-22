@@ -13,7 +13,8 @@ class Detector(Node):
         super().__init__("detector")
 
         self.bridge = CvBridge()
-        self.pub = self.create_publisher(Image, "detections", 1)
+        self.pub_detect = self.create_publisher(Image, "detections", 1)
+        self.pub_chat = self.create_publisher(String, "chatter", 1)
 
         # Determine min and max pixel values
 
@@ -47,7 +48,7 @@ class Detector(Node):
             self.get_logger().warn(f"ROS->OpenCV {e}")
             return
 
-        self.pub.publish(msg_out)
+        self.pub_detect.publish(msg_out)
 
     def detect(self, img: np.ndarray) -> np.ndarray:
         # Filter pixels based on their value
@@ -90,13 +91,12 @@ class Detector(Node):
                 areamax = areamax_red
                 imax = imax_red
                 contours = contours_red
-                self.pub = self.create_publisher(Image, "detections", 1)
-                print("gauche")
+                self.pub_chat.publish(String(data="red"))
             else:
                 areamax = areamax_blue
                 imax = imax_blue
                 contours = contours_blue
-                print("droite")
+                self.pub_chat.publish(String(data="blue"))
             cv2.drawContours(img, contours, imax, (0,255,0), 3,8)
             # centerx = np.mean(contours[imax][0])
             # centery = np.mean(contours[imax][1])
