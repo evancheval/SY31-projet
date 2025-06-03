@@ -58,6 +58,8 @@ class Detector(Node):
                 return
 
             self.pub_detect.publish(msg_out)
+        else: # Publication de l'image classique si la distance est trop grande : la détection n'a pas lieu.
+            self.pub_detect.publish(msg)
 
     def detect(self, img: np.ndarray, direction_fleche_sujet: bool = True) -> np.ndarray:
         # Filter pixels based on their value
