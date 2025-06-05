@@ -22,7 +22,8 @@ setup(
     entry_points={
         'console_scripts': [
             "decompressor = exo1.decompressor:main",
-            "detections = exo1.detect:main"
+            "detections = exo1.detect:main",
+            "odom2pose = exo1.odom2pose:main"
         ],
     },
 )
