@@ -15,14 +15,17 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='ubuntu',
-    maintainer_email='ubuntu@todo.todo',
+    maintainer_email='evan.chevalerias@etu.utc.fr',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             "decompressor = exo1.decompressor:main",
-            "detections = exo1.detect:main"
+            "detections = exo1.detect:main",
+            "transformer = exo1.transformer:main",
+            "icp_pose_estimator = exo1.icp_pose_estimator:main",
+            "odom2pose = exo1.odom2pose:main"            
         ],
     },
 )

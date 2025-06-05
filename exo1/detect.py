@@ -23,13 +23,14 @@ class Detector(Node):
 
         #mask HSV
         #blue mask (HSV) : 205/360 hue -> 160 to 230 -> OpenCV : 80 to 115
-        self.blue_min = np.array([[80, 120, 80]], dtype=np.uint8)
-        self.blue_max = np.array([[115, 230, 250]], dtype=np.uint8)
+        self.blue_min = np.array([[80, 80, 80]], dtype=np.uint8)
+        self.blue_max = np.array([[115, 255, 250]], dtype=np.uint8)
 
         self.red_min = np.array([[0, 100, 10], [140, 100, 10]], dtype=np.uint8)
         self.red_max = np.array([[10, 230, 245], [180, 230, 245]], dtype=np.uint8)
 
-        self.sub_camera = self.create_subscription(Image, "image_rect", self.callback, 1)
+        # self.sub_camera = self.create_subscription(Image, "image_rect", self.callback, 1)
+        self.sub_camera = self.create_subscription(Image, "image_raw", self.callback, 1)
         self.sub_sonar = self.create_subscription(SensorState, "sensor_state", self.callback_sonar, 1)
 
     def callback_sonar(self, msg: SensorState) :
@@ -38,7 +39,7 @@ class Detector(Node):
     def callback(self, msg: Image):
         """Process the images going on image_rect"""
 
-        if self.distance < 600.0 and self.distance > 10.0:
+        if self.distance < 650.0 and self.distance > 10.0:
 
             # Convert ROS -> OpenCV
             try:
