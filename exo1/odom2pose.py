@@ -122,6 +122,7 @@ class Odom2Pose(Node):
         ]
 
         self.pub_enco_traj.publish(create_cloud(header, fields, self.traj_enco))
+        self.calcul_traj_moy_enco_gyro(header)
 
     def callback_gyro(self, gyro: Imu):
         dt = self.dt_from_stamp(gyro.header.stamp, "prev_gyro_t")
@@ -163,6 +164,35 @@ class Odom2Pose(Node):
         ]
 
         self.pub_gyro_traj.publish(create_cloud(header, fields, self.traj_gyro))
+        
+        self.calcul_traj_moyen_enco_gyro(header)
+
+
+    #fct qui va publié sur le noeu \traj_moy_enco_gyro une meilleur estimation de la trajectoire grace aux enco et gyro
+    def calcul_traj_moyen_enco_gyro(self, header):
+
+        if len(self.traj_enco) == 0 or len(self.traj_gyro) == 0:
+            return
+        if len(self.traj_enco) != len(self.traj_gyro):
+            return
+
+        liste_pt_traj_moy = []
+        for i in range(len(self.traj_enco)) :
+            pt_enco = self.traj_enco[i]
+            pt_gyro = self.traj_gyro[i]
+            pt_moy = (np.array(pt_enco)+ np.array(pt_gyro))/2.0
+            liste_pt_traj_moy.append(pt_moy)
+
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='intensity', offset=12, datatype=PointField.FLOAT32, count=1),
+            PointField(name='ring', offset=16, datatype=PointField.FLOAT32, count=1),
+        ]
+
+        header.frame_id = "odom"
+        self.pub_moy_traj.publish(create_cloud(header, fields, liste_pt_traj_moy))
 
 
 def main(args=None):
