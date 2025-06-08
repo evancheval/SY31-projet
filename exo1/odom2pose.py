@@ -9,8 +9,7 @@ from sensor_msgs.msg import Imu, MagneticField
 from turtlebot3_msgs.msg import SensorState
 from transforms3d.euler import euler2quat, quat2euler
 from sensor_msgs_py.point_cloud2 import create_cloud
-from sensor_msgs.msg import PointCloud2
-from sensor_msgs.msg import PointField
+from sensor_msgs.msg import PointCloud2, PointField
 
 
 class Odom2Pose(Node):
@@ -40,9 +39,7 @@ class Odom2Pose(Node):
 
         # Subscribers
         self.sub_gyro = self.create_subscription(Imu, "/imu", self.callback_gyro, 10)
-        self.sub_enco = self.create_subscription(
-            SensorState, "/sensor_state", self.callback_enco, 10
-        )
+        self.sub_enco = self.create_subscription(SensorState, "/sensor_state", self.callback_enco, 10)
         
 
 
@@ -130,14 +127,12 @@ class Odom2Pose(Node):
         # TODO: retrieve the angular velocity
         self.w = gyro.angular_velocity.z
 
+        
+
         # TODO: update O_gyro, x_gyro and y_gyro accordingly (using encoders' self.v)
         self.O_gyro = self.O_gyro + self.w*dt
         self.x_gyro = self.x_gyro + self.v * dt*np.cos(self.O_gyro)
         self.y_gyro = self.y_gyro + self.v * dt * np.sin(self.O_gyro)
-
-        quat = [self.x_gyro, self.y_gyro, 0, self.O_gyro]
-        eulZYZ = quat2euler(quat, 'szxz')
-        # print(eulZYZ)
 
         self.pub_gyro.publish(
             Odom2Pose.coordinates_to_message(

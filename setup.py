@@ -25,7 +25,8 @@ setup(
             "detections = exo1.detect:main",
             "transformer = exo1.transformer:main",
             "icp_pose_estimator = exo1.icp_pose_estimator:main",
-            "odom2pose = exo1.odom2pose:main"            
+            "odom2pose = exo1.odom2pose:main",
+            "mapping = exo1.mapping:main",            
         ],
     },
 )

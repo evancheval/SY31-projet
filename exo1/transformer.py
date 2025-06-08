@@ -34,6 +34,12 @@ class Transformer(Node):
             if (msg.ranges[i]>0.99):
                 continue         
 
+            # Elimination des points aberrants
+            seuil = 0.01
+            if (i > 0 and i < len(msg.ranges) - 1 and
+                (abs(msg.ranges[i] - msg.ranges[i - 1]) > seuil and abs(msg.ranges[i] - msg.ranges[i + 1]) > seuil)):
+                continue
+
             # TODO: Polar to Cartesian transformation
             x = msg.ranges[i] * np.cos(theta)
             y = msg.ranges[i] * np.sin(theta)

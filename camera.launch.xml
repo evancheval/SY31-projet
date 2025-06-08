@@ -12,9 +12,12 @@
 	<!-- TODO: Add your nodes here -->
 	<node pkg="exo1" exec="detections" name="detections" output="screen" />
 
-    <node pkg="exo1" exec="transformer" name="transformer"/>
+    <node pkg="exo1" exec="transformer" name="transformer" output="screen" />
     
-    <node pkg="exo1" exec="icp_pose_estimator" name="icp_pose_estimator" />
+    <!-- <node pkg="exo1" exec="icp_pose_estimator" name="icp_pose_estimator" /> -->
 
 	<node pkg="exo1" exec="odom2pose" name="odom2pose" />
+
+	<node pkg="exo1" exec="mapping" name="mapping" output="screen"/>
+
 </launch>
