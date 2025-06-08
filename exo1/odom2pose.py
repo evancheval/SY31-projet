@@ -37,6 +37,7 @@ class Odom2Pose(Node):
         self.pub_gyro = self.create_publisher(PoseStamped, "/pose_gyro", 10)
         self.pub_enco_traj = self.create_publisher(PointCloud2, "/traj_enco", 10)
         self.pub_gyro_traj = self.create_publisher(PointCloud2, "/traj_gyro", 10)
+        self.pub_moy_traj = self.create_publisher(PointCloud2, "/traj_moy_enco_gyro", 10)
 
         # Subscribers
         self.sub_gyro = self.create_subscription(Imu, "/imu", self.callback_gyro, 10)
