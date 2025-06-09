@@ -157,30 +157,28 @@ class Detector(Node):
                 imax = imax_red
                 contours = contours_red
                 if direction_fleche_sujet:
-                    # self.pub_instructions.publish("Gauche")
                     direction = "Gauche"
                 else:
-                    # self.pub_instructions.publish("Droite")
                     direction = "Droite"
             else:
                 areamax = areamax_blue
                 imax = imax_blue
                 contours = contours_blue
                 if direction_fleche_sujet:
-                    # self.pub_instructions.publish("Droite")
                     direction = "Droite"
                 else:
-                    # self.pub_instructions.publish("Gauche")
                     direction = "Gauche"
-            
+
             # Différent message à afficher
             if self.dt < 500 and direction != self.instruction2:
                 self.instruction2 = direction
                 self.get_logger().info(f"{direction} URGENT !")
+                # self.pub_instructions.publish(String(f"{direction} URGENT !"))
 
             if direction != self.instruction:
                 self.instruction = direction
                 self.get_logger().info(direction)
+                self.pub_instructions.publish(String(direction))
 
             
 
