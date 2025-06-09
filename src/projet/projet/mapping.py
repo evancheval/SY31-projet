@@ -169,61 +169,26 @@ class MappingClass(Node):
 
             #########################################################################################
             # Correction de l'erreur de rotation du Lidar par ICP
-            # Non inclus car diminue la précision du mapping
+            # Non utilisé car diminue la précision du mapping au final
             #########################################################################################
+            
             # if self.previous_msg_map is not None and abs(self.last_angle - self.O_gyro) > 0.1:
-                # self.get_logger().info(f"Correction de l'erreur de rotation du Lidar par ICP")
-                # # Correction de l'erreur de rotation du Lidar
-                # ref_points : np.ndarray = read_points_numpy(self.previous_msg_map, ["x", "y"])
-                # ref_points_fixed = MappingClass.apply_transform(ref_points, self.previous_ref_T)
+            #     # self.get_logger().info(f"Correction de l'erreur de rotation du Lidar par ICP")
+            #     # Correction de l'erreur de rotation du Lidar
+            #     ref_points : np.ndarray = read_points_numpy(self.previous_msg_map, ["x", "y"])
+            #     ref_points_fixed = MappingClass.apply_transform(ref_points, self.previous_ref_T)
 
-                # plus_proche_voisin = MappingClass.find_nearest_neighbors_euclidian(xy_fixed, ref_points_fixed)
-                # distances = np.linalg.norm(xy_fixed - plus_proche_voisin, axis=1)
-                # # Sélectionner les points qui sont suffisamment proches de leur plus proche voisin
-                # mask = distances < 0.05
-                # xy_fixed = xy_fixed[mask]
+            #     # On retire les points qui sont trop loin car ça peut fausser l'ICP
+            #     plus_proche_voisin = MappingClass.find_nearest_neighbors_euclidian(xy_fixed, ref_points_fixed)
+            #     distances = np.linalg.norm(xy_fixed - plus_proche_voisin, axis=1)
+            #     # Sélectionner les points qui sont suffisamment proches de leur plus proche voisin
+            #     mask = distances < 0.05
+            #     xy_fixed = xy_fixed[mask]
 
-                # self.previous_ref_T = self.ref_T.copy()
-                # # pose_vect3 = MappingClass.estimate_pose_from_points(xy_fixed)
-                # # ref_T = np.eye(3)
-                # # ref_T[0:2, 2] = pose_vect3[0:2,0]
-                # # Get T between ref and xy
-                # T_current = MappingClass.apply_icp(xy_fixed, ref_points_fixed)
-                # # T_current = ref_T @ T_current
-                # # R_current = T_current[:2, :2]
-                # # T_current[0:2, 2] = np.zeros((2,))
-                # # Previous T -> current T
-                # self.T_lidar = self.T_lidar.copy() @ T_current
-                # # new_xy_fixed = MappingClass.apply_transform(xy.copy(), self.ref_T.copy() @ self.T_lidar)
-                # # self.previous_msg_map = msg
-                # # map_msg = np.hstack(
-                # #     (
-                # #         ref_points_fixed,
-                # #         np.zeros((len(ref_points_fixed), 1)),
-                # #         np.ones((len(ref_points_fixed), 1)),
-                # #         np.ones((len(ref_points_fixed), 1)),
-                # #     )
-                # # )
-                # # map_msg = np.vstack((map_msg, 
-                # #                      np.hstack(
-                # #                          (
-                # #                             new_xy_fixed,
-                # #                             np.zeros((len(new_xy_fixed), 1)),
-                # #                             np.ones((len(new_xy_fixed), 1))*2,
-                # #                             np.ones((len(new_xy_fixed), 1))*2
-                # #                          )
-                # #                      )))
-                # # map_msg = np.vstack((map_msg,
-                # #                      np.hstack(
-                # #                          (
-                # #                             ref_points,
-                # #                             np.zeros((len(ref_points), 1)),
-                # #                             np.zeros((len(ref_points), 1))
-                # #                          )
-                # #                      )))
-                
-                # # self.pub_map.publish(create_cloud(msg.header, msg.fields, map_msg))
-                # # return
+            #     self.previous_ref_T = self.ref_T.copy()
+            #     T_current = MappingClass.apply_icp(xy_fixed, ref_points_fixed)
+            #     self.T_lidar = self.T_lidar.copy() @ T_current
+
             #########################################################################################
 
             xy_fixed = MappingClass.apply_transform(xy_fixed.copy(), self.T_lidar)
@@ -329,89 +294,89 @@ class MappingClass(Node):
 
     #########################################################################################
     # Correction de l'erreur de rotation du Lidar par ICP
-    # Non inclus car diminue la précision du mapping
+    # Non utilisé car diminue la précision du mapping au final
     #########################################################################################
-    # @staticmethod
-    # def estimate_pose_from_points(xy: np.ndarray) -> np.ndarray:
-    #     """Renvoie le centre du cluster sous forme de matrice (2*1)."""
-    #     xy_c = np.ndarray([2,1])
-    #     xy_c[:,0] = np.mean(xy[:,0]), np.mean(xy[:,1])
-    #     return xy_c
+    @staticmethod
+    def estimate_pose_from_points(xy: np.ndarray) -> np.ndarray:
+        """Renvoie le centre du cluster sous forme de matrice (2*1)."""
+        xy_c = np.ndarray([2,1])
+        xy_c[:,0] = np.mean(xy[:,0]), np.mean(xy[:,1])
+        return xy_c
 
-    # @staticmethod
-    # def best_fit_transform(S, D):
-    #     """Trouve la meilleure transformation (T) entre S et D.
-    #     :param S: nuage de points source
-    #     :param D: nuage de points destination
-    #     :return: matrice de transformation (4*4) entre source et destination
-    #     """
-    #     # Centre de masse
-    #     centroid_S = np.mean(S, axis=0)
-    #     centroid_D = np.mean(D, axis=0)
+    @staticmethod
+    def best_fit_transform(S, D):
+        """Trouve la meilleure transformation (T) entre S et D.
+        :param S: nuage de points source
+        :param D: nuage de points destination
+        :return: matrice de transformation (4*4) entre source et destination
+        """
+        # Centre de masse
+        centroid_S = np.mean(S, axis=0)
+        centroid_D = np.mean(D, axis=0)
 
-    #     # Centrer les nuages de points à l'origine
-    #     SS = S - centroid_S
-    #     DD = D - centroid_D
-    #     H = SS.T @ DD
+        # Centrer les nuages de points à l'origine
+        SS = S - centroid_S
+        DD = D - centroid_D
+        H = SS.T @ DD
 
-    #     # Si la matrice de covariance H contient des NaN ou des Inf, il y a un problème
-    #     if not np.all(np.isfinite(H)):
-    #         return np.eye(4)
+        # Si la matrice de covariance H contient des NaN ou des Inf, il y a un problème
+        if not np.all(np.isfinite(H)):
+            return np.eye(4)
 
-    #     try:
-    #         U, _, VT = np.linalg.svd(H)
-    #     except np.linalg.LinAlgError:
-    #         # La SVD n'a pas convergé
-    #         return np.eye(4)
+        try:
+            U, _, VT = np.linalg.svd(H)
+        except np.linalg.LinAlgError:
+            # La SVD n'a pas convergé
+            return np.eye(4)
 
-    #     R_mat = VT.T @ U.T
+        R_mat = VT.T @ U.T
 
-    #     # Réflexion détectée
-    #     if np.linalg.det(R_mat) < 0:
-    #         VT[2, :] *= -1
-    #         R_mat = VT.T @ U.T
+        # Réflexion détectée
+        if np.linalg.det(R_mat) < 0:
+            VT[2, :] *= -1
+            R_mat = VT.T @ U.T
 
-    #     t = centroid_D - R_mat @ centroid_S
+        t = centroid_D - R_mat @ centroid_S
 
-    #     T = np.eye(4)
-    #     T[:3, :3] = R_mat
-    #     T[:3, 3] = t
-    #     return T
+        T = np.eye(4)
+        T[:3, :3] = R_mat
+        T[:3, 3] = t
+        return T
 
-    # @staticmethod
-    # def apply_icp(S: np.ndarray, D: np.ndarray, max_iter: int = 20, tol: float = 1e-10):
-    #     """Appliquer l'ICP de S à D.
-    #     :param S: nuage de points source
-    #     :param D: nuage de points destination
-    #     :param max_iter: Nombre maximal d'itérations
-    #     :param tol: Tolérance d'erreur entre 2 erreurs consécutives avant d'arrêter le processus
-    #     :return: matrice de transformation (4*4)
-    #     """
-    #     T = np.eye(3)
-    #     error_prev = float("-inf")
-    #     error_current = float("inf")
-    #     ST = S
-    #     D3D = np.hstack((D, np.zeros((D.shape[0], 1))))
-    #     i = 0
+    @staticmethod
+    def apply_icp(S: np.ndarray, D: np.ndarray, max_iter: int = 20, tol: float = 1e-10):
+        """Appliquer l'ICP de S à D.
+        :param S: nuage de points source
+        :param D: nuage de points destination
+        :param max_iter: Nombre maximal d'itérations
+        :param tol: Tolérance d'erreur entre 2 erreurs consécutives avant d'arrêter le processus
+        :return: matrice de transformation (4*4)
+        """
+        T = np.eye(3)
+        error_prev = float("-inf")
+        error_current = float("inf")
+        ST = S
+        D3D = np.hstack((D, np.zeros((D.shape[0], 1))))
+        i = 0
 
-    #     while i < max_iter and abs(error_current - error_prev) > tol:
-    #         ST3D = np.hstack((ST, np.zeros((ST.shape[0], 1))))
-    #         voisins_ST_dans_D = MappingClass.find_nearest_neighbors_euclidian(ST, D)
-    #         voisins_ST_dans_D3D = np.hstack((voisins_ST_dans_D, np.zeros((voisins_ST_dans_D.shape[0], 1))))
-    #         T_local3D = MappingClass.best_fit_transform(ST3D, voisins_ST_dans_D3D)
-    #         T_local = np.eye(3)
-    #         T_local[:2,:2] = T_local3D[:2, :2]
-    #         T_local[:2, 2] = T_local3D[:2, 3]
-    #         ST = MappingClass.apply_transform(ST, T_local)
-    #         T = T @ T_local
-    #         error_prev = error_current
+        while i < max_iter and abs(error_current - error_prev) > tol:
+            ST3D = np.hstack((ST, np.zeros((ST.shape[0], 1))))
+            voisins_ST_dans_D = MappingClass.find_nearest_neighbors_euclidian(ST, D)
+            voisins_ST_dans_D3D = np.hstack((voisins_ST_dans_D, np.zeros((voisins_ST_dans_D.shape[0], 1))))
+            T_local3D = MappingClass.best_fit_transform(ST3D, voisins_ST_dans_D3D)
+            T_local = np.eye(3)
+            T_local[:2,:2] = T_local3D[:2, :2]
+            T_local[:2, 2] = T_local3D[:2, 3]
+            ST = MappingClass.apply_transform(ST, T_local)
+            T = T @ T_local
+            error_prev = error_current
 
-    #         error_current = np.mean(
-    #             MappingClass.find_nearest_neighbors_euclidian(ST, D)
-    #         )
-    #         i += 1
+            error_current = np.mean(
+                MappingClass.find_nearest_neighbors_euclidian(ST, D)
+            )
+            i += 1
 
-    #     return T
+        return T
 
     #########################################################################################
 
