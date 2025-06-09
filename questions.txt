@@ -1,2 +1,0 @@
- - est-il possible de publier sur plusieurs canaux avec le même callback ? et avec le même self.pub ?
- - 

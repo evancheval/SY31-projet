@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/env python3
 
 from pathlib import Path
 
@@ -23,14 +23,16 @@ class Decompressor(Node):
 
         self.info = CameraInfo()
         self.timer = self.create_timer(1.0, self.update_info)
-        self.sub = self.create_subscription(CompressedImage, "image_robot", self.callback, self.qos)
+        self.sub = self.create_subscription(
+            CompressedImage, "image_robot", self.callback, self.qos
+        )
 
     def update_info(self):
-        calib_path = Path.home() / "calib.yaml"
+        calib_path = Path.home() / "sy31_projet/src/projet/calib.yaml"
 
         if not calib_path.exists():
-            # ROS' camera calibrator puts its calibration in /tmp
-            # Copy it in the home directory if not already done
+            # Le calibrateur de caméra de ROS place sa calibration dans /tmp
+            # Copie dans le répertoire personnel si ce n'est pas déjà fait
             calib_path_tmp = Path("/tmp/calibrationdata.tar.gz")
             if not calib_path_tmp.exists():
                 return

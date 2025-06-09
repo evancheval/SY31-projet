@@ -1,0 +1,26 @@
+<launch>
+	<!-- Prendre le flux compressé du robot et le republier comme une image normale -->
+	<node pkg="projet" exec="decompressor" name="decompressor" output="screen" />
+
+	<!-- Décompresser et redresser l'image non compressée
+	Si utilisé, dans le noeud detect.py, il faut changer l'abonnement de "image_raw" à "image_rect" -->
+	<!-- <node pkg="image_proc" exec="image_proc" name="image_proc" output="screen">
+		<remap from="image" to="image_raw" />
+	</node> -->
+
+	<!-- Pour afficher l'image et (et la détection de flèches quand elle a lieu) -->
+	<!-- <node pkg="rqt_image_view" exec="rqt_image_view" name="rqt_image_view" output="screen" /> -->
+
+	<!-- Noeud chargé de la détection des flèches -->
+	<node pkg="projet" exec="detections" name="detections" output="screen" />
+
+	<!-- Noeud chargé de transformer les messages Lidar du robot en nuages de points. -->
+    <node pkg="projet" exec="transformer" name="transformer" output="screen" />
+
+	<!-- Noeud chargé de transformer les messages odom (encodeurs) et imu (gyromètre) du robot en messages de position. -->
+	<node pkg="projet" exec="odom2pose" name="odom2pose" />
+
+	<!-- Noeud chargé de la cartographie de l'environnement du robot à partir des messages de position et des nuages de points. -->
+	<node pkg="projet" exec="mapping" name="mapping" output="screen"/>
+
+</launch>

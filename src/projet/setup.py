@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'exo1'
+package_name = 'projet'
 
 setup(
     name=package_name,
@@ -10,23 +10,23 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name, ['camera.launch.xml']),
+        ('share/' + package_name, ['projet.launch.xml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='ubuntu',
+    maintainer='evancheval',
     maintainer_email='evan.chevalerias@etu.utc.fr',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Projet SY31 - Cartographie Guidée',
+    license='CC BY-SA 4.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "decompressor = exo1.decompressor:main",
-            "detections = exo1.detect:main",
-            "transformer = exo1.transformer:main",
-            "icp_pose_estimator = exo1.icp_pose_estimator:main",
-            "odom2pose = exo1.odom2pose:main",
-            "mapping = exo1.mapping:main",            
+            "decompressor = projet.decompressor:main",
+            "detections = projet.detect:main",
+            "transformer = projet.transformer:main",
+            "icp_pose_estimator = projet.icp_pose_estimator:main",
+            "odom2pose = projet.odom2pose:main",
+            "mapping = projet.mapping:main",            
         ],
     },
 )

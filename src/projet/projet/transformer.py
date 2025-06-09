@@ -18,34 +18,45 @@ PC2FIELDS = [
 class Transformer(Node):
     def __init__(self):
         super().__init__("transformer")
-        lidar_qos =  qos.QoSProfile(depth=10, reliability=qos.QoSReliabilityPolicy.BEST_EFFORT)
+        lidar_qos = qos.QoSProfile(
+            depth=10, reliability=qos.QoSReliabilityPolicy.BEST_EFFORT
+        )
         self.pub = self.create_publisher(PointCloud2, "points", 10)
         self.sub = self.create_subscription(LaserScan, "scan", self.callback, lidar_qos)
+
+        # Seuil pour l'élimination des points Lidar aberrants
+        self.seuil = 0.01
 
     def callback(self, msg: LaserScan):
         xy = []
         intensities = []
-        for i, theta in enumerate(np.arange(msg.angle_min, msg.angle_max, msg.angle_increment)):
-            # TODO: Remove points too close
-            if (msg.ranges[i]<0.1): # 10 cm = 0.1 m
-                continue       
-
-            # To prevent bugs with the arc shape
-            if (msg.ranges[i]>0.99):
-                continue         
-
-            # Elimination des points aberrants
-            seuil = 0.01
-            if (i > 0 and i < len(msg.ranges) - 1 and
-                (abs(msg.ranges[i] - msg.ranges[i - 1]) > seuil and abs(msg.ranges[i] - msg.ranges[i + 1]) > seuil)):
+        for i, theta in enumerate(
+            np.arange(msg.angle_min, msg.angle_max, msg.angle_increment)
+        ):
+            if msg.ranges[i] < 0.1:  # 10 cm = 0.1 m
                 continue
 
-            # TODO: Polar to Cartesian transformation
+            # Pour éviter les erreurs de mesure, comme avec l'arc (voir rapport)
+            if msg.ranges[i] > 0.99:
+                continue
+
+            # Elimination des points aberrants
+            # point très éloigné de ses 2 voisins (écart > seuil) eux-mêmes proches entre eux.
+            if (
+                i > 0
+                and i < len(msg.ranges) - 1
+                and abs(msg.ranges[i] - msg.ranges[i - 1]) > self.seuil
+                and abs(msg.ranges[i] - msg.ranges[i + 1]) > self.seuil
+                and abs(msg.ranges[i - 1] - msg.ranges[i + 1]) < self.seuil
+            ):
+                continue
+
+            # Transformation des coordonnées polaires (distance, angle) en coordonnées cartésiennes (x, y)
             x = msg.ranges[i] * np.cos(theta)
             y = msg.ranges[i] * np.sin(theta)
-            xy.append((x,y))
+            xy.append((x, y))
             intensities.append(msg.intensities[i])
-            
+
         zeros = np.zeros((len(xy), 1))
         intensities = np.reshape(intensities, (len(intensities), 1))
         points = np.hstack((xy, zeros, intensities, zeros))
