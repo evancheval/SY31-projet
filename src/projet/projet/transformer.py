@@ -47,7 +47,7 @@ class Transformer(Node):
                 and i < len(msg.ranges) - 1
                 and abs(msg.ranges[i] - msg.ranges[i - 1]) > self.seuil
                 and abs(msg.ranges[i] - msg.ranges[i + 1]) > self.seuil
-                and abs(msg.ranges[i - 1] - msg.ranges[i + 1]) < self.seuil
+                # and abs(msg.ranges[i - 1] - msg.ranges[i + 1]) < self.seuil
             ):
                 continue
 

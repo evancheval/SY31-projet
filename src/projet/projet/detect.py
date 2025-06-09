@@ -177,12 +177,12 @@ class Detector(Node):
             if self.dt < 500 and direction != self.instruction2:
                 self.instruction2 = direction
                 self.get_logger().info(f"{direction} URGENT !")
-                # self.pub_instructions.publish(String(f"{direction} URGENT !"))
+                # self.pub_instructions.publish(String(data=f"{direction} URGENT !"))
 
             if direction != self.instruction:
                 self.instruction = direction
                 self.get_logger().info(direction)
-                self.pub_instructions.publish(String(direction))
+                self.pub_instructions.publish(String(data=direction))
 
             
 
