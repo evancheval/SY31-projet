@@ -9,10 +9,13 @@ from std_msgs.msg import String
 from turtlebot3_msgs.msg import SensorState
 
 
-# zdz
 class Detector(Node):
     def __init__(self):
         super().__init__("detector")
+
+        # pour gérer les affichages
+        self.instruction = ""
+        self.instruction2 = ""
 
         # Initialisation du laps de temps parcouru par le son du sonar au mur (en µs)
         # Initialisation à 1000 µs pour éviter les erreurs de détection au démarrage
@@ -66,6 +69,11 @@ class Detector(Node):
     def callback_image(self, msg: Image):
         """Procède à la détection des flèches dans l'image reçue,
         seulement si on s'approche du mur"""
+
+        # pour éviter que le message de direction s'affiche plus d'une fois
+        if self.dt > 1000:
+            self.instruction = ""
+            self.instruction2 = ""
 
         # Si self.dt = 650 µs, alors d'après la documentation du constructeur,
         # pour un TurtleBot3 Burger, la distance au mur est de
@@ -150,20 +158,31 @@ class Detector(Node):
                 contours = contours_red
                 if direction_fleche_sujet:
                     # self.pub_instructions.publish("Gauche")
-                    self.get_logger().info("Gauche")
+                    direction = "Gauche"
                 else:
                     # self.pub_instructions.publish("Droite")
-                    self.get_logger().info("Droite")
+                    direction = "Droite"
             else:
                 areamax = areamax_blue
                 imax = imax_blue
                 contours = contours_blue
                 if direction_fleche_sujet:
                     # self.pub_instructions.publish("Droite")
-                    self.get_logger().info("Droite")
+                    direction = "Droite"
                 else:
                     # self.pub_instructions.publish("Gauche")
-                    self.get_logger().info("Gauche")
+                    direction = "Gauche"
+            
+            # Différent message à afficher
+            if self.dt < 500 and direction != self.instruction2:
+                self.instruction2 = direction
+                self.get_logger().info(f"{direction} URGENT !")
+
+            if direction != self.instruction:
+                self.instruction = direction
+                self.get_logger().info(direction)
+
+            
 
             if areamax > 1.0:
                 cv2.drawContours(img, contours, imax, (0, 255, 0), 3, 8)
