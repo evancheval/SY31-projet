@@ -42,7 +42,7 @@ class MappingClass(Node):
         self.map_gyro: np.ndarray = None
 
         # Distance minimale entre deux points Lidar pour qu'ils soient considérés comme différents
-        self.dist_min = 0.01
+        self.dist_min = 0.05
 
         # Indicateurs pour savoir si on mappe l'encodeur et/ou le gyroscope
         self.mapping_enco = True
@@ -57,7 +57,7 @@ class MappingClass(Node):
 
         # Création d'un timer pour traiter le mapping,
         # afin de ne pas être surchargé par les messages du Lidar
-        self.timer = self.create_timer(1.0, self.process_latest_msg)
+        self.timer = self.create_timer(0.2, self.process_latest_msg)
 
         # Initialisation des variables pour les poses de l'encodeur et du gyroscope
         self.x_enco, self.y_enco, self.O_enco = None, None, None
@@ -324,7 +324,7 @@ class MappingClass(Node):
                 create_cloud(msg.header, msg.fields, map_msg_gyro)
             )
         elapsed = time.time() - start_time
-        self.get_logger().info(f"Temps écoulé : {elapsed} secondes")
+        # self.get_logger().info(f"Temps écoulé : {elapsed} secondes")
 
 
     #########################################################################################

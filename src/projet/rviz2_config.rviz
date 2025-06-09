@@ -60,7 +60,7 @@ Visualization Manager:
       Channel Name: cluster
       Class: rviz_default_plugins/PointCloud2
       Color: 246; 245; 244
-      Color Transformer: Intensity
+      Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
