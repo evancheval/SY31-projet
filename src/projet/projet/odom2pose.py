@@ -33,7 +33,7 @@ class Odom2Pose(Node):
         self.traj_gyro = []
 
         # Initialisation des écarts-types pour les poses de l'encodeur et du gyroscope
-        self.s_enco = 0.05
+        self.s_enco = 0.2
         self.s_gyro = 0.05
         self.Lambda = self.s_gyro**2 / (self.s_enco**2 + self.s_gyro**2)
 

@@ -35,13 +35,17 @@ class Detector(Node):
         # Masque flèche bleue (HSV) :
         # 205/360 hue -> intervalle entre 160 et 230
         #             -> OpenCV : 80 à 115
+        # Saturation entre 80/255 et 255/255
+        # Brillance entre 80/255 et 250/255
         self.blue_min = np.array([[80, 80, 80]], dtype=np.uint8)
         self.blue_max = np.array([[115, 255, 250]], dtype=np.uint8)
 
         # Masque flèche rouge (HSV) :
-        # 0/360 hue -> intervalle entre 0 et 20 et entre 280 et 360 (deux intervalles, d'où le tableau à deux lignes)
-        #             -> OpenCV : 0 à 10 et 140 à 180
-        self.red_min = np.array([[0, 100, 10], [140, 100, 10]], dtype=np.uint8)
+        # 0/360 hue -> intervalle entre 0 et 20 et entre 300 et 360 (deux intervalles, d'où le tableau à deux lignes)
+        #             -> OpenCV : 0 à 10 et 150 à 180
+        # Saturation entre 100/255 et 230/255
+        # Brillance entre 10/255 et 245/255
+        self.red_min = np.array([[0, 100, 10], [150, 100, 10]], dtype=np.uint8)
         self.red_max = np.array([[10, 230, 245], [180, 230, 245]], dtype=np.uint8)
 
         # Abonnement aux messages de la caméra et du sonar

@@ -50,8 +50,9 @@ Pour visualiser l'image caméra en temps réel, vous pouvez décommenter la lign
 ```
 Pour voir la détection, choisissez le topic `detections` dans le menu déroulant en haut à gauche de la fenêtre Rqt qui s'ouvre à l'exécution.
 
-Pour déplacer le robot, vous pouvez utiliser la commande suivante dans un autre terminal (dans le dossier `sy31_projet_elvec`) :
+Pour déplacer le robot, vous pouvez utiliser les commandes suivantes dans un autre terminal (dans le dossier `sy31_projet_elvec`) :
 ```bash
+export ROS_DOMAIN_ID=6
 TURTLEBOT3_MODEL=burger ros2 run turtlebot3_teleop teleop_keyboard
 ```
 

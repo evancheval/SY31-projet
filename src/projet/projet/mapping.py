@@ -67,7 +67,7 @@ class MappingClass(Node):
         self.x_gyro_0, self.y_gyro_0, self.O_gyro_0 = None, None, None
 
         # Initialisation des écarts-types pour les poses de l'encodeur et du gyroscope
-        self.s_enco = 0.05
+        self.s_enco = 0.2
         self.s_gyro = 0.05
         self.Lambda = self.s_gyro**2 / (self.s_enco**2 + self.s_gyro**2)
 
@@ -396,7 +396,7 @@ class MappingClass(Node):
         """
         T = np.eye(4)
         # Translation
-        T[0:3, 3] =  + 1* Lidar[0:3]
+        T[0:3, 3] =  Lidar[0:3] - Fixed[0:3]
         # Rotation
         OL = Lidar[3]  # Orientation du robot dans son repère (repère Lidar)
         OF = Fixed[3]  # Orientation du robot dans le repère fixe
