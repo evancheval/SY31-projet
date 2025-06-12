@@ -56,6 +56,12 @@ export ROS_DOMAIN_ID=6
 TURTLEBOT3_MODEL=burger ros2 run turtlebot3_teleop teleop_keyboard
 ```
 
+Pour vérifier que la connexion est établie, vous pouvez afficher la liste des topics. Vous devriez voir au moins `/sensor_state` et `/cmd_vel`. Si ce n’est pas le cas, cela signifie probablement que vous avez oublié d’exécuter export ROS_DOMAIN_ID=6 ou que le robot ne s’est pas initialisé correctement.
+Dans ce dernier cas, vous pouvez redémarrer ses nœuds en exécutant
+```bash
+ssh root@192.168.111.1 -t "systemctl restart bringup"
+```
+
 ### Exemple
 Pour tester le projet, vous pouvez lancer dans un autre terminal (toujours dans le dossier `sy31_projet_elvec`) le bag de données fourni dans le projet :	
 ```bash
